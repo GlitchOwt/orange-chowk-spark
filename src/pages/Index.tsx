@@ -5,6 +5,7 @@ import { Dashboard } from '@/components/Dashboard';
 import { Hero } from '@/components/Hero';
 import { Auth } from '@/components/Auth';
 import { useAuth } from '@/contexts/AuthContext';
+import { Footer } from '@/components/ui/footer-section';
 
 // Animation variants
 const pageVariants = {
@@ -147,6 +148,7 @@ const Index = () => {
             transition={pageTransition}
           >
             <Hero onStartApplication={handleStartApplication} />
+            <Footer />
           </motion.div>
         )}
         
@@ -249,61 +251,64 @@ const Index = () => {
             exit="out"
             variants={pageVariants}
             transition={pageTransition}
-            className="min-h-screen flex items-center justify-center p-6"
+            className="min-h-screen flex flex-col"
           >
-            <motion.div
-              className="max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-orange-200/50 shadow-sm"
-              variants={rejectionVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <motion.div 
-                className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6"
-                variants={iconVariants}
+            <div className="flex-1 flex items-center justify-center p-6">
+              <motion.div
+                className="max-w-md mx-auto text-center bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-orange-200/50 shadow-sm"
+                variants={rejectionVariants}
                 initial="hidden"
                 animate="visible"
               >
-                <motion.span 
-                  className="text-orange-600 text-2xl"
-                  animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
+                <motion.div 
+                  className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6"
+                  variants={iconVariants}
+                  initial="hidden"
+                  animate="visible"
                 >
-                  ✦
-                </motion.span>
-              </motion.div>
-              <motion.h2 
-                className="text-2xl font-bold text-slate-800 mb-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                Thank you for your interest
-              </motion.h2>
-              <motion.p 
-                className="text-slate-700 mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                While your application doesn't align with our current community focus, 
-                we encourage you to reapply as you continue your creative journey.
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                variants={buttonVariants}
-                whileHover="hover"
-                whileTap="tap"
-              >
-                <button
-                  onClick={() => setUserStatus('landing')}
-                  className="px-6 py-3 bg-orange-500 text-white hover:bg-orange-600 rounded-lg font-medium transition-colors"
+                  <motion.span 
+                    className="text-orange-600 text-2xl"
+                    animate={{ rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                  >
+                    ✦
+                  </motion.span>
+                </motion.div>
+                <motion.h2 
+                  className="text-2xl font-bold text-slate-800 mb-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
                 >
-                  Back to Home
-                </button>
+                  Thank you for your interest
+                </motion.h2>
+                <motion.p 
+                  className="text-slate-700 mb-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  While your application doesn't align with our current community focus, 
+                  we encourage you to reapply as you continue your creative journey.
+                </motion.p>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                >
+                  <button
+                    onClick={() => setUserStatus('landing')}
+                    className="px-6 py-3 bg-orange-500 text-white hover:bg-orange-600 rounded-lg font-medium transition-colors"
+                  >
+                    Back to Home
+                  </button>
+                </motion.div>
               </motion.div>
-            </motion.div>
+            </div>
+            <Footer />
           </motion.div>
         )}
       </AnimatePresence>
