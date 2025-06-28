@@ -69,11 +69,11 @@ Deno.serve(async (req) => {
   try {
     const { answers }: { answers: FormAnswers } = await req.json();
 
-    // Get the API key from Supabase secrets - using GEMINI_API_KEY as you saved it
-    const apiKey = Deno.env.get('GEMINI_API_KEY');
+    // Get the API key from Supabase secrets - using GEMINI-KEY as you saved it
+    const apiKey = Deno.env.get('GEMINI-KEY');
     if (!apiKey) {
-      console.error('GEMINI_API_KEY not found in environment variables');
-      throw new Error('GEMINI_API_KEY not found in environment variables');
+      console.error('GEMINI-KEY not found in environment variables');
+      throw new Error('GEMINI-KEY not found in environment variables');
     }
 
     console.log('API Key found, initializing Gemini...');
