@@ -1,13 +1,29 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ApplicationForm } from '@/components/ApplicationForm';
 import { Dashboard } from '@/components/Dashboard';
 import { Hero } from '@/components/Hero';
+import { Auth } from '@/components/Auth';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
+  const { user, loading } = useAuth();
   const [userStatus, setUserStatus] = useState<'landing' | 'applying' | 'approved' | 'rejected'>('landing');
   const [userData, setUserData] = useState(null);
+
+  // If user is authenticated, show dashboard directly
+  useEffect(() => {
+    if (user && !loading) {
+      setUserStatus('approved');
+      setUserData({
+        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+        email: user.email,
+        profession: 'Creative Professional',
+        city: 'Community Member'
+      });
+    }
+  }, [user, loading]);
 
   const handleStartApplication = () => {
     setUserStatus('applying');
@@ -21,6 +37,20 @@ const Index = () => {
       setUserStatus('rejected');
     }
   };
+
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50 flex items-center justify-center">
+        <div className="text-orange-600 text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  // Show auth page if not authenticated
+  if (!user) {
+    return <Auth />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50">

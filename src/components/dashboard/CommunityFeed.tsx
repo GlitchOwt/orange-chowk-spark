@@ -5,64 +5,32 @@ import {
   Heart,
   MessageCircle,
   Share2,
-  Plus
+  Plus,
+  LogOut
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-
-interface Post {
-  id: number;
-  author: string;
-  content: string;
-  image?: string | null;
-  likes: number;
-  comments: number;
-  time: string;
-  liked: boolean;
-}
+import { useAuth } from '@/contexts/AuthContext';
+import { usePosts } from '@/hooks/usePosts';
+import { formatDistanceToNow } from 'date-fns';
 
 interface CommunityFeedProps {
   userData: any;
 }
 
-const mockPosts = [
-  {
-    id: 1,
-    author: 'Priya Sharma',
-    content: 'Just launched my new illustration series inspired by Indian folklore! Would love to collaborate with fellow storytellers.',
-    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500&h=400&object=cover',
-    likes: 24,
-    comments: 8,
-    time: '2 hours ago',
-    liked: false
-  },
-  {
-    id: 2,
-    author: 'Arjun Mehta',
-    content: 'Looking for a filmmaker to work on a documentary about street art in Bangalore. DM me if interested!',
-    likes: 15,
-    comments: 5,
-    time: '4 hours ago',
-    liked: false
-  }
-];
-
 export const CommunityFeed = ({ userData }: CommunityFeedProps) => {
-  const [posts, setPosts] = useState<Post[]>(mockPosts);
   const [newPost, setNewPost] = useState('');
   const { toast } = useToast();
+  const { user, signOut } = useAuth();
+  const { posts, loading, createPost, toggleLike } = usePosts();
 
-  const handleLike = (postId: number) => {
-    setPosts(posts.map(post => 
-      post.id === postId 
-        ? { ...post, liked: !post.liked, likes: post.liked ? post.likes - 1 : post.likes + 1 }
-        : post
-    ));
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const handleShare = (postId: number) => {
+  const handleShare = (postId: string) => {
     navigator.clipboard.writeText(`${window.location.origin}/post/${postId}`);
     toast({
       title: "Link copied!",
@@ -70,26 +38,28 @@ export const CommunityFeed = ({ userData }: CommunityFeedProps) => {
     });
   };
 
-  const handleCreatePost = () => {
+  const handleCreatePost = async () => {
     if (newPost.trim()) {
-      const post = {
-        id: posts.length + 1,
-        author: userData.name,
-        content: newPost,
-        image: null,
-        likes: 0,
-        comments: 0,
-        time: 'Just now',
-        liked: false
-      };
-      setPosts([post, ...posts]);
+      await createPost(newPost.trim());
       setNewPost('');
-      toast({
-        title: "Post created!",
-        description: "Your post has been shared with the community.",
-      });
     }
   };
+
+  const handleLike = async (postId: string) => {
+    await toggleLike(postId);
+  };
+
+  const isLiked = (post: any) => {
+    return post.post_likes.some((like: any) => like.user_id === user?.id);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="text-orange-600">Loading posts...</div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -97,6 +67,20 @@ export const CommunityFeed = ({ userData }: CommunityFeedProps) => {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
+      {/* Header with sign out */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-orange-900">Welcome, {userData?.name}!</h2>
+        <Button
+          onClick={signOut}
+          variant="outline"
+          size="sm"
+          className="border-orange-200 text-orange-700 hover:bg-orange-50"
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Sign Out
+        </Button>
+      </div>
+
       {/* Create Post */}
       <Card className="bg-white/80 backdrop-blur-sm border-orange-100/50 p-6 shadow-sm">
         <h3 className="text-lg font-semibold text-orange-900 mb-4">Share with the community</h3>
@@ -121,61 +105,69 @@ export const CommunityFeed = ({ userData }: CommunityFeedProps) => {
       <Card className="bg-white/80 backdrop-blur-sm border-orange-100/50 p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-orange-900 mb-4">Community Feed</h2>
         
-        <div className="space-y-6">
-          {posts.map((post) => (
-            <motion.div
-              key={post.id}
-              className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-orange-100/30 shadow-sm"
-              whileHover={{ scale: 1.01 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <Avatar>
-                  <AvatarFallback className="bg-orange-100 text-orange-700">
-                    {post.author.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h4 className="text-orange-900 font-medium">{post.author}</h4>
-                  <p className="text-orange-700 text-sm">{post.time}</p>
+        {posts.length === 0 ? (
+          <div className="text-center py-8 text-orange-700">
+            <p>No posts yet. Be the first to share something!</p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {posts.map((post) => (
+              <motion.div
+                key={post.id}
+                className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-orange-100/30 shadow-sm"
+                whileHover={{ scale: 1.01 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <Avatar>
+                    <AvatarFallback className="bg-orange-100 text-orange-700">
+                      {getInitials(post.profiles.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h4 className="text-orange-900 font-medium">{post.profiles.name}</h4>
+                    <p className="text-orange-700 text-sm">
+                      {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              
-              <p className="text-orange-800 mb-4">{post.content}</p>
-              
-              {post.image && (
-                <img 
-                  src={post.image} 
-                  alt="Post content" 
-                  className="w-full h-48 object-cover rounded-lg mb-4"
-                />
-              )}
-              
-              <div className="flex items-center gap-6 text-orange-700">
-                <button 
-                  onClick={() => handleLike(post.id)}
-                  className={`flex items-center gap-2 hover:text-orange-500 transition-colors ${
-                    post.liked ? 'text-orange-500' : ''
-                  }`}
-                >
-                  <Heart className={`w-4 h-4 ${post.liked ? 'fill-current' : ''}`} />
-                  {post.likes}
-                </button>
-                <button className="flex items-center gap-2 hover:text-orange-500 transition-colors">
-                  <MessageCircle className="w-4 h-4" />
-                  {post.comments}
-                </button>
-                <button 
-                  onClick={() => handleShare(post.id)}
-                  className="flex items-center gap-2 hover:text-orange-500 transition-colors"
-                >
-                  <Share2 className="w-4 h-4" />
-                  Share
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                
+                <p className="text-orange-800 mb-4">{post.content}</p>
+                
+                {post.image_url && (
+                  <img 
+                    src={post.image_url} 
+                    alt="Post content" 
+                    className="w-full h-48 object-cover rounded-lg mb-4"
+                  />
+                )}
+                
+                <div className="flex items-center gap-6 text-orange-700">
+                  <button 
+                    onClick={() => handleLike(post.id)}
+                    className={`flex items-center gap-2 hover:text-orange-500 transition-colors ${
+                      isLiked(post) ? 'text-orange-500' : ''
+                    }`}
+                  >
+                    <Heart className={`w-4 h-4 ${isLiked(post) ? 'fill-current' : ''}`} />
+                    {post.post_likes.length}
+                  </button>
+                  <button className="flex items-center gap-2 hover:text-orange-500 transition-colors">
+                    <MessageCircle className="w-4 h-4" />
+                    {post.post_comments.length}
+                  </button>
+                  <button 
+                    onClick={() => handleShare(post.id)}
+                    className="flex items-center gap-2 hover:text-orange-500 transition-colors"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </Card>
     </motion.div>
   );
