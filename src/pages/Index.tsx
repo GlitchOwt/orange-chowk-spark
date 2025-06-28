@@ -9,21 +9,8 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
   const { user, loading } = useAuth();
-  const [userStatus, setUserStatus] = useState<'landing' | 'applying' | 'approved' | 'rejected'>('landing');
+  const [userStatus, setUserStatus] = useState<'landing' | 'applying' | 'approved' | 'rejected' | 'creating-account'>('landing');
   const [userData, setUserData] = useState(null);
-
-  // If user is authenticated, show dashboard directly
-  useEffect(() => {
-    if (user && !loading) {
-      setUserStatus('approved');
-      setUserData({
-        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
-        email: user.email,
-        profession: 'Creative Professional',
-        city: 'Community Member'
-      });
-    }
-  }, [user, loading]);
 
   const handleStartApplication = () => {
     setUserStatus('applying');
@@ -31,15 +18,19 @@ const Index = () => {
 
   const handleApplicationResult = (approved: boolean, data: any) => {
     if (approved) {
-      setUserStatus('approved');
+      setUserStatus('creating-account');
       setUserData(data);
     } else {
       setUserStatus('rejected');
     }
   };
 
-  // Show loading state while checking auth
-  if (loading) {
+  const handleAccountCreated = () => {
+    setUserStatus('approved');
+  };
+
+  // Show loading state while checking auth (only when user is authenticated)
+  if (loading && user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50 flex items-center justify-center">
         <div className="text-orange-600 text-lg">Loading...</div>
@@ -47,9 +38,16 @@ const Index = () => {
     );
   }
 
-  // Show auth page if not authenticated
-  if (!user) {
-    return <Auth />;
+  // If user is already authenticated, show dashboard
+  if (user && userStatus !== 'creating-account') {
+    return (
+      <Dashboard userData={{
+        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+        email: user.email,
+        profession: 'Creative Professional',
+        city: 'Community Member'
+      }} />
+    );
   }
 
   return (
@@ -62,7 +60,30 @@ const Index = () => {
         <ApplicationForm onResult={handleApplicationResult} />
       )}
       
-      {userStatus === 'approved' && userData && (
+      {userStatus === 'creating-account' && (
+        <div className="min-h-screen flex items-center justify-center p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-md mx-auto bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-orange-200/50 shadow-sm"
+          >
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-green-600 text-2xl">🎉</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-800 mb-4">
+                Welcome to Orange Chowk!
+              </h2>
+              <p className="text-slate-700 mb-6">
+                Your application has been approved! Please create your account to access the community dashboard.
+              </p>
+            </div>
+            <Auth onAccountCreated={handleAccountCreated} />
+          </motion.div>
+        </div>
+      )}
+      
+      {userStatus === 'approved' && userData && user && (
         <Dashboard userData={userData} />
       )}
       

@@ -8,8 +8,12 @@ import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
-export const Auth = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
+interface AuthProps {
+  onAccountCreated?: () => void;
+}
+
+export const Auth = ({ onAccountCreated }: AuthProps) => {
+  const [isSignUp, setIsSignUp] = useState(true); // Default to sign up for new approved users
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -40,6 +44,11 @@ export const Auth = () => {
           title: isSignUp ? "Account created!" : "Welcome back!",
           description: isSignUp ? "Please check your email to verify your account." : "You've been signed in successfully."
         });
+        
+        // Call the callback when account is successfully created
+        if (onAccountCreated) {
+          onAccountCreated();
+        }
       }
     } catch (error) {
       toast({
@@ -53,21 +62,23 @@ export const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50 flex items-center justify-center p-6">
+    <div className={onAccountCreated ? "" : "min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50 flex items-center justify-center p-6"}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
         <Card className="bg-white/80 backdrop-blur-sm border-orange-100/50 p-8 shadow-sm">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-orange-900 mb-2">
-              Orange Chowk
-            </h1>
-            <p className="text-orange-700">
-              {isSignUp ? "Join the creative community" : "Welcome back to the community"}
-            </p>
-          </div>
+          {!onAccountCreated && (
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-orange-900 mb-2">
+                Orange Chowk
+              </h1>
+              <p className="text-orange-700">
+                {isSignUp ? "Join the creative community" : "Welcome back to the community"}
+              </p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {isSignUp && (
@@ -114,19 +125,21 @@ export const Auth = () => {
               disabled={loading}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white"
             >
-              {loading ? "Please wait..." : (isSignUp ? "Sign Up" : "Sign In")}
+              {loading ? "Please wait..." : (isSignUp ? "Create Account" : "Sign In")}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <button
-              type="button"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-orange-600 hover:text-orange-700 font-medium"
-            >
-              {isSignUp ? "Already have an account? Sign in" : "Don't have an account? Sign up"}
-            </button>
-          </div>
+          {!onAccountCreated && (
+            <div className="mt-6 text-center">
+              <button
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-orange-600 hover:text-orange-700 font-medium"
+              >
+                {isSignUp ? "Already have an account? Sign in" : "Don't have an account? Sign up"}
+              </button>
+            </div>
+          )}
         </Card>
       </motion.div>
     </div>
