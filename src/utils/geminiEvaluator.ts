@@ -66,7 +66,7 @@ export async function evaluateWithGemini(answers: FormAnswers): Promise<GeminiEv
   try {
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-pro",
+      model: "gemini-1.5-flash",
       generationConfig: {
         maxOutputTokens: 1024,
         temperature: 0.1, // Low temperature for consistent evaluation
