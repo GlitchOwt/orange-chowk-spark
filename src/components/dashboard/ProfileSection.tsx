@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Edit } from 'lucide-react';
@@ -8,13 +7,21 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ProfileSectionProps {
   userData: any;
 }
 
+const cities = [
+  'Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad', 
+  'Pune', 'Ahmedabad', 'Jaipur', 'Lucknow', 'Kochi', 'Chandigarh', 'Other'
+];
+
 export const ProfileSection = ({ userData }: ProfileSectionProps) => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [profileData, setProfileData] = useState({
     name: userData.name,
     profession: userData.profession,
@@ -23,13 +30,56 @@ export const ProfileSection = ({ userData }: ProfileSectionProps) => {
     portfolio: userData.portfolio || ''
   });
   const { toast } = useToast();
+  const { user } = useAuth();
 
-  const handleSaveProfile = () => {
-    setIsEditingProfile(false);
-    toast({
-      title: "Profile updated!",
-      description: "Your profile changes have been saved.",
-    });
+  const handleSaveProfile = async () => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to update your profile.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Update profile in the profiles table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          name: profileData.name,
+          profession: profileData.profession,
+          city: profileData.city,
+          portfolio: profileData.portfolio
+        })
+        .eq('id', user.id);
+
+      if (profileError) throw profileError;
+
+      // Update user metadata to keep name consistent across the app
+      const { error: authError } = await supabase.auth.updateUser({
+        data: { name: profileData.name }
+      });
+
+      if (authError) throw authError;
+
+      setIsEditingProfile(false);
+      toast({
+        title: "Profile updated!",
+        description: "Your profile changes have been saved successfully.",
+      });
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -45,6 +95,7 @@ export const ProfileSection = ({ userData }: ProfileSectionProps) => {
             variant="outline"
             size="sm"
             onClick={() => setIsEditingProfile(!isEditingProfile)}
+            disabled={isSubmitting}
             className="border-orange-200 text-orange-700 hover:bg-orange-50"
           >
             <Edit className="w-4 h-4 mr-2" />
@@ -72,7 +123,7 @@ export const ProfileSection = ({ userData }: ProfileSectionProps) => {
               <Input 
                 value={profileData.name}
                 onChange={(e) => setProfileData({...profileData, name: e.target.value})}
-                disabled={!isEditingProfile}
+                disabled={!isEditingProfile || isSubmitting}
                 className="bg-white/50 border-orange-200 focus:border-orange-500"
               />
             </div>
@@ -81,9 +132,23 @@ export const ProfileSection = ({ userData }: ProfileSectionProps) => {
               <Input 
                 value={profileData.profession}
                 onChange={(e) => setProfileData({...profileData, profession: e.target.value})}
-                disabled={!isEditingProfile}
+                disabled={!isEditingProfile || isSubmitting}
                 className="bg-white/50 border-orange-200 focus:border-orange-500"
               />
+            </div>
+            <div>
+              <Label className="text-orange-800 mb-2">City</Label>
+              <select
+                value={profileData.city}
+                onChange={(e) => setProfileData({...profileData, city: e.target.value})}
+                disabled={!isEditingProfile || isSubmitting}
+                className="flex h-10 w-full rounded-md border border-orange-200 bg-white/50 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">Select your city</option>
+                {cities.map(city => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
+              </select>
             </div>
             <div>
               <Label className="text-orange-800 mb-2">Email</Label>
@@ -94,14 +159,14 @@ export const ProfileSection = ({ userData }: ProfileSectionProps) => {
                 className="bg-orange-50/50 border-orange-200 text-orange-600"
               />
             </div>
-            <div>
+            <div className="md:col-span-2">
               <Label className="text-orange-800 mb-2">Portfolio</Label>
               <Input 
                 type="url" 
                 value={profileData.portfolio}
                 onChange={(e) => setProfileData({...profileData, portfolio: e.target.value})}
                 placeholder="https://your-portfolio.com"
-                disabled={!isEditingProfile}
+                disabled={!isEditingProfile || isSubmitting}
                 className="bg-white/50 border-orange-200 focus:border-orange-500"
               />
             </div>
@@ -111,13 +176,22 @@ export const ProfileSection = ({ userData }: ProfileSectionProps) => {
             <div className="flex gap-4">
               <Button 
                 onClick={handleSaveProfile}
+                disabled={isSubmitting}
                 className="bg-orange-500 hover:bg-orange-600 text-white"
               >
-                Save Changes
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Saving...
+                  </div>
+                ) : (
+                  'Save Changes'
+                )}
               </Button>
               <Button 
                 variant="outline" 
                 onClick={() => setIsEditingProfile(false)}
+                disabled={isSubmitting}
                 className="border-orange-200 text-orange-700 hover:bg-orange-50"
               >
                 Cancel
