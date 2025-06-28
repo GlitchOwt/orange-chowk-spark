@@ -23,7 +23,7 @@ export const Dashboard = ({ userData }: DashboardProps) => {
   const tabs = [
     { id: 'feed', label: 'Community Feed', icon: MessageSquare },
     { id: 'events', label: 'My Events', icon: Calendar },
-    { id: 'groups', label: 'City Groups', icon: Users },
+    { id: 'groups', label: 'Groups', icon: Users },
     { id: 'profile', label: 'Profile', icon: User }
   ];
 
