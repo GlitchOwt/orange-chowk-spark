@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { evaluateOrangeChowkApplication } from '@/utils/orangeChowkEvaluator';
+import { evaluateWithGemini, convertGeminiToApplicationResult } from '@/utils/geminiEvaluator';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -146,10 +146,8 @@ export const ApplicationForm = ({ onResult }: ApplicationFormProps) => {
     setIsSubmitting(true);
     
     try {
-      // Simulate processing delay
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      const evaluation = evaluateOrangeChowkApplication({
+      // Evaluate with Gemini AI
+      const geminiResult = await evaluateWithGemini({
         motivation: formData.answers.motivation || '',
         community: formData.answers.community || '',
         collaboration: formData.answers.collaboration || '',
@@ -157,7 +155,10 @@ export const ApplicationForm = ({ onResult }: ApplicationFormProps) => {
         values: formData.answers.values || ''
       });
 
-      console.log('Evaluation Result:', evaluation);
+      // Convert to application format
+      const evaluation = convertGeminiToApplicationResult(geminiResult);
+
+      console.log('Gemini AI Evaluation Result:', evaluation);
       
       const resultData = {
         ...formData,
@@ -412,7 +413,7 @@ export const ApplicationForm = ({ onResult }: ApplicationFormProps) => {
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Evaluating Application...
+                    Evaluating with AI...
                   </div>
                 ) : (
                   <>
@@ -428,8 +429,8 @@ export const ApplicationForm = ({ onResult }: ApplicationFormProps) => {
         {/* Footer Note */}
         <div className="mt-8 p-4 bg-orange-50 rounded-lg border border-orange-200">
           <p className="text-orange-800 text-sm text-center">
-            <strong>Note:</strong> Our AI evaluates applications based on depth, sincerity, creative clarity, and community mindset. 
-            Please provide authentic, personal responses.
+            <strong>Note:</strong> Your application will be evaluated by Gemini AI based on emotional depth, authenticity, creative clarity, and community mindset. 
+            Please provide genuine, personal responses.
           </p>
         </div>
       </motion.div>
