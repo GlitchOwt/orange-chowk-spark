@@ -6,6 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { evaluateOrangeChowkApplication } from '@/utils/orangeChowkEvaluator';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface ApplicationFormProps {
   onResult: (approved: boolean, data: any) => void;
@@ -70,6 +72,7 @@ export const ApplicationForm = ({ onResult }: ApplicationFormProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEventDropdown, setShowEventDropdown] = useState(false);
+  const { toast } = useToast();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -97,6 +100,48 @@ export const ApplicationForm = ({ onResult }: ApplicationFormProps) => {
     }));
   };
 
+  const saveApplicationToDatabase = async (applicationData: any, evaluation: any) => {
+    try {
+      const { error } = await supabase
+        .from('application_responses')
+        .insert([{
+          name: applicationData.name,
+          email: applicationData.email,
+          city: applicationData.city,
+          profession: applicationData.profession,
+          past_events: applicationData.pastEvents,
+          motivation: applicationData.answers.motivation,
+          community_meaning: applicationData.answers.community,
+          collaboration_story: applicationData.answers.collaboration,
+          current_projects: applicationData.answers.growth,
+          contribution_plans: applicationData.answers.values,
+          evaluation_score: evaluation.score,
+          evaluation_feedback: evaluation.feedback,
+          evaluation_breakdown: evaluation.breakdown,
+          ai_detected: evaluation.aiDetected,
+          status: evaluation.approved ? 'approved' : 'rejected'
+        }]);
+
+      if (error) {
+        console.error('Error saving application:', error);
+        toast({
+          title: "Warning",
+          description: "Application processed but not saved to database. Please contact support.",
+          variant: "destructive"
+        });
+      } else {
+        console.log('Application saved successfully to database');
+      }
+    } catch (error) {
+      console.error('Error saving application to database:', error);
+      toast({
+        title: "Warning",
+        description: "Application processed but not saved to database. Please contact support.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     
@@ -119,9 +164,17 @@ export const ApplicationForm = ({ onResult }: ApplicationFormProps) => {
         evaluation
       };
 
+      // Save to database
+      await saveApplicationToDatabase(formData, evaluation);
+
       onResult(evaluation.approved, resultData);
     } catch (error) {
       console.error('Application evaluation failed:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process application. Please try again.",
+        variant: "destructive"
+      });
       onResult(false, null);
     }
     

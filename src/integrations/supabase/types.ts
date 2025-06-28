@@ -9,6 +9,69 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      application_responses: {
+        Row: {
+          ai_detected: boolean | null
+          city: string | null
+          collaboration_story: string
+          community_meaning: string
+          contribution_plans: string
+          created_at: string
+          current_projects: string
+          email: string
+          evaluation_breakdown: Json | null
+          evaluation_feedback: string | null
+          evaluation_score: number | null
+          id: string
+          motivation: string
+          name: string
+          past_events: Json | null
+          profession: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_detected?: boolean | null
+          city?: string | null
+          collaboration_story: string
+          community_meaning: string
+          contribution_plans: string
+          created_at?: string
+          current_projects: string
+          email: string
+          evaluation_breakdown?: Json | null
+          evaluation_feedback?: string | null
+          evaluation_score?: number | null
+          id?: string
+          motivation: string
+          name: string
+          past_events?: Json | null
+          profession?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_detected?: boolean | null
+          city?: string | null
+          collaboration_story?: string
+          community_meaning?: string
+          contribution_plans?: string
+          created_at?: string
+          current_projects?: string
+          email?: string
+          evaluation_breakdown?: Json | null
+          evaluation_feedback?: string | null
+          evaluation_score?: number | null
+          id?: string
+          motivation?: string
+          name?: string
+          past_events?: Json | null
+          profession?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       post_comments: {
         Row: {
           content: string
