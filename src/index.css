@@ -92,6 +92,23 @@
   }
 }
 
+/* Font Definitions */
+@font-face {
+  font-family: 'Youth Medium';
+  src: url('data:font/woff2;base64,') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neuething Sans Test Regular';
+  src: url('data:font/woff2;base64,') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -99,6 +116,12 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Neuething Sans Test Regular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Apply Neuething Sans to all text elements */
+  h1, h2, h3, h4, h5, h6, p, span, div, button, input, textarea, label, a {
+    font-family: 'Neuething Sans Test Regular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
@@ -154,13 +177,4 @@
   66% {
     transform: translate(8%, -8%) rotate(1deg) scale(0.9);
   }
-}
-
-/* Youth Medium Font */
-@font-face {
-  font-family: 'Youth Medium';
-  src: url('data:font/woff2;base64,') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
 }

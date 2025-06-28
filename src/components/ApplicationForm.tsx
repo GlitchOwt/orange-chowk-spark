@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send, ArrowLeft, ChevronDown } from 'lucide-react';
@@ -149,7 +148,7 @@ export const ApplicationForm = ({ onResult }: ApplicationFormProps) => {
       >
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-slate-800 mb-2">
+          <h1 className="text-2xl font-bold text-slate-800 mb-2" style={{ fontFamily: 'Youth Medium, sans-serif' }}>
             orange <span className="text-orange-500">chowk</span>
           </h1>
           <p className="text-slate-600 text-sm">
