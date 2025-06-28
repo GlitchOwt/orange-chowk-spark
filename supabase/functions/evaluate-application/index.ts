@@ -69,11 +69,14 @@ Deno.serve(async (req) => {
   try {
     const { answers }: { answers: FormAnswers } = await req.json();
 
-    // Get the API key from Supabase secrets
+    // Get the API key from Supabase secrets - using GEMINI_API_KEY as you saved it
     const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) {
+      console.error('GEMINI_API_KEY not found in environment variables');
       throw new Error('GEMINI_API_KEY not found in environment variables');
     }
+
+    console.log('API Key found, initializing Gemini...');
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ 
@@ -110,13 +113,16 @@ ${fullText}
 
 Provide your evaluation as a JSON object with score, flagged_as_ai, and comments fields.`;
 
+    console.log('Sending request to Gemini...');
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
+    console.log('Received response from Gemini:', text);
 
     // Extract JSON from the response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
+      console.error('No valid JSON found in Gemini response:', text);
       throw new Error('No valid JSON found in Gemini response');
     }
 
@@ -126,11 +132,14 @@ Provide your evaluation as a JSON object with score, flagged_as_ai, and comments
     if (typeof evaluation.score !== 'number' || 
         typeof evaluation.flagged_as_ai !== 'boolean' || 
         typeof evaluation.comments !== 'string') {
+      console.error('Invalid evaluation structure:', evaluation);
       throw new Error('Invalid evaluation structure from Gemini');
     }
 
     // Ensure score is within valid range
     evaluation.score = Math.max(0, Math.min(10, Math.round(evaluation.score)));
+
+    console.log('Evaluation successful:', evaluation);
 
     return new Response(
       JSON.stringify(evaluation),
@@ -149,7 +158,7 @@ Provide your evaluation as a JSON object with score, flagged_as_ai, and comments
     const fallbackEvaluation = {
       score: 5,
       flagged_as_ai: false,
-      comments: 'Unable to evaluate with AI. Manual review required.'
+      comments: 'Unable to evaluate with AI. Manual review required. Error: ' + error.message
     };
 
     return new Response(
