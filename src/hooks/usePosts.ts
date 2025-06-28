@@ -30,12 +30,12 @@ export const usePosts = () => {
         .from('posts')
         .select(`
           *,
-          profiles (name, avatar_url),
+          profiles!posts_user_id_fkey (name, avatar_url),
           post_likes (user_id),
           post_comments (
             id,
             content,
-            profiles (name)
+            profiles!post_comments_user_id_fkey (name)
           )
         `)
         .order('created_at', { ascending: false });
