@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -15,7 +14,12 @@ export interface Post {
     avatar_url?: string;
   };
   post_likes: { user_id: string }[];
-  post_comments: { id: string; content: string; profiles: { name: string } }[];
+  post_comments: { 
+    id: string; 
+    content: string; 
+    created_at: string;
+    profiles: { name: string } 
+  }[];
 }
 
 export const usePosts = () => {
@@ -35,13 +39,23 @@ export const usePosts = () => {
           post_comments (
             id,
             content,
+            created_at,
             profiles!post_comments_user_id_fkey (name)
           )
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPosts(data || []);
+      
+      // Sort comments by creation date for each post
+      const postsWithSortedComments = data?.map(post => ({
+        ...post,
+        post_comments: post.post_comments.sort((a, b) => 
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        )
+      })) || [];
+      
+      setPosts(postsWithSortedComments);
     } catch (error) {
       console.error('Error fetching posts:', error);
       toast({
@@ -120,6 +134,64 @@ export const usePosts = () => {
     }
   };
 
+  const addComment = async (postId: string, content: string) => {
+    if (!user || !content.trim()) return;
+
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .insert([{
+          post_id: postId,
+          user_id: user.id,
+          content: content.trim()
+        }]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Comment added!",
+        description: "Your comment has been posted."
+      });
+
+      fetchPosts(); // Refresh posts to show new comment
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add comment",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const deleteComment = async (commentId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .delete()
+        .eq('id', commentId)
+        .eq('user_id', user.id); // Ensure user can only delete their own comments
+
+      if (error) throw error;
+
+      toast({
+        title: "Comment deleted",
+        description: "Your comment has been removed."
+      });
+
+      fetchPosts(); // Refresh posts
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete comment",
+        variant: "destructive"
+      });
+    }
+  };
+
   useEffect(() => {
     fetchPosts();
 
@@ -140,6 +212,13 @@ export const usePosts = () => {
       }, () => {
         fetchPosts();
       })
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'post_comments'
+      }, () => {
+        fetchPosts();
+      })
       .subscribe();
 
     return () => {
@@ -152,6 +231,8 @@ export const usePosts = () => {
     loading,
     createPost,
     toggleLike,
+    addComment,
+    deleteComment,
     refetch: fetchPosts
   };
 };
