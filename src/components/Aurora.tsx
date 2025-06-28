@@ -152,6 +152,16 @@ const Aurora: React.FC<AuroraProps> = ({
       },
     });
 
+    // Check if the WebGL program was created successfully
+    if (!program.glProgram || !gl.getProgramParameter(program.glProgram, gl.LINK_STATUS)) {
+      console.error('Aurora: WebGL shader program failed to link');
+      const info = gl.getProgramInfoLog(program.glProgram);
+      if (info) {
+        console.error('Aurora: Program info log:', info);
+      }
+      return;
+    }
+
     // Create geometry
     const geometry = new Plane(gl, {
       width: 2,
@@ -164,9 +174,17 @@ const Aurora: React.FC<AuroraProps> = ({
 
     // Animation loop
     const animate = (time: number) => {
-      program.uniforms.uTime.value = time * 0.001;
-      renderer.render({ scene, camera });
-      animationRef.current = requestAnimationFrame(animate);
+      try {
+        program.uniforms.uTime.value = time * 0.001;
+        renderer.render({ scene, camera });
+        animationRef.current = requestAnimationFrame(animate);
+      } catch (error) {
+        console.error('Aurora: Render error:', error);
+        // Stop animation on error
+        if (animationRef.current) {
+          cancelAnimationFrame(animationRef.current);
+        }
+      }
     };
 
     // Handle resize
