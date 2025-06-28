@@ -1,4 +1,3 @@
-
 import { User, Calendar, Users, MessageSquare } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -24,8 +23,8 @@ export const DashboardHeader = ({ userData, tabs, activeTab, setActiveTab }: Das
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="text-2xl font-bold text-orange-900">
-                orange <span className="text-orange-500">chowk</span>
+              <div className="framer-text bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+                orange chowk
               </div>
               <Badge className="bg-orange-100 text-orange-800 border-orange-200">
                 Member

@@ -4,6 +4,33 @@
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
+/* Custom font import for Youth Medium */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Custom font face for Youth Medium - fallback to Inter if not available */
+@font-face {
+  font-family: 'Youth Medium';
+  src: local('Inter Medium'), local('Inter-Medium');
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Youth Medium Placeholder';
+  src: local('Inter Medium'), local('Inter-Medium');
+  font-weight: 500;
+  font-display: swap;
+}
+
+/* Custom class for orange chowk text styling */
+.framer-text {
+  font-family: "Youth Medium", "Youth Medium Placeholder", sans-serif;
+  font-size: 25px;
+  letter-spacing: -0.05em;
+  color: rgb(255, 255, 255);
+  font-style: normal;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

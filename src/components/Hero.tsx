@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { ArrowRight, Users, Sparkles, Heart } from 'lucide-react';
 
@@ -25,8 +24,9 @@ export const Hero = ({ onStartApplication }: HeroProps) => {
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold text-slate-800 mb-6">
-            orange
-            <span className="text-orange-500"> chowk</span>
+            <span className="framer-text bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+              orange chowk
+            </span>
           </h1>
           
           <p className="text-xl md:text-2xl text-slate-700 mb-8 max-w-2xl mx-auto leading-relaxed">
