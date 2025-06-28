@@ -113,49 +113,6 @@
   overflow: hidden;
 }
 
-.aurora-gradient {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  opacity: 0.6;
-  animation: aurora-move 20s ease-in-out infinite;
-  filter: blur(40px);
-}
-
-.aurora-gradient-2 {
-  animation: aurora-move-2 30s ease-in-out infinite reverse;
-  opacity: 0.4;
-}
-
-@keyframes aurora-move {
-  0%, 100% {
-    transform: translate(0%, 0%) rotate(0deg) scale(1);
-  }
-  25% {
-    transform: translate(5%, -10%) rotate(1deg) scale(1.1);
-  }
-  50% {
-    transform: translate(-5%, 5%) rotate(-1deg) scale(0.9);
-  }
-  75% {
-    transform: translate(10%, -5%) rotate(0.5deg) scale(1.05);
-  }
-}
-
-@keyframes aurora-move-2 {
-  0%, 100% {
-    transform: translate(0%, 0%) rotate(0deg) scale(0.8);
-  }
-  33% {
-    transform: translate(-8%, 8%) rotate(-0.5deg) scale(1);
-  }
-  66% {
-    transform: translate(8%, -8%) rotate(1deg) scale(0.9);
-  }
-}
-
 /* Youth Medium Font */
 @font-face {
   font-family: 'Youth Medium';
