@@ -10,7 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const Index = () => {
   const { user, loading } = useAuth();
   const [userStatus, setUserStatus] = useState<'landing' | 'applying' | 'approved' | 'rejected' | 'creating-account'>('landing');
-  const [userData, setUserData] = useState(null);
+  const [applicationData, setApplicationData] = useState(null);
 
   const handleStartApplication = () => {
     setUserStatus('applying');
@@ -19,7 +19,7 @@ const Index = () => {
   const handleApplicationResult = (approved: boolean, data: any) => {
     if (approved) {
       setUserStatus('creating-account');
-      setUserData(data);
+      setApplicationData(data);
     } else {
       setUserStatus('rejected');
     }
@@ -38,16 +38,17 @@ const Index = () => {
     );
   }
 
-  // If user is already authenticated, show dashboard
+  // If user is already authenticated, show dashboard with application data
   if (user && userStatus !== 'creating-account') {
-    return (
-      <Dashboard userData={{
-        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
-        email: user.email,
-        profession: 'Creative Professional',
-        city: 'Community Member'
-      }} />
-    );
+    const dashboardUserData = {
+      name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+      email: user.email,
+      profession: applicationData?.profession || 'Creative Professional',
+      city: applicationData?.city || 'Community Member',
+      pastEvents: applicationData?.pastEvents || []
+    };
+    
+    return <Dashboard userData={dashboardUserData} />;
   }
 
   return (
@@ -83,8 +84,14 @@ const Index = () => {
         </div>
       )}
       
-      {userStatus === 'approved' && userData && user && (
-        <Dashboard userData={userData} />
+      {userStatus === 'approved' && applicationData && user && (
+        <Dashboard userData={{
+          name: user.user_metadata?.name || applicationData.name || user.email?.split('@')[0] || 'User',
+          email: user.email || applicationData.email,
+          profession: applicationData.profession || 'Creative Professional',
+          city: applicationData.city || 'Community Member',
+          pastEvents: applicationData.pastEvents || []
+        }} />
       )}
       
       {userStatus === 'rejected' && (
