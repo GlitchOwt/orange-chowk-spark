@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send, ArrowLeft, ChevronDown } from 'lucide-react';
@@ -148,8 +149,8 @@ export const ApplicationForm = ({ onResult }: ApplicationFormProps) => {
       >
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="framer-text bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent mb-2">
-            orange chowk
+          <h1 className="text-2xl font-bold text-slate-800 mb-2">
+            orange <span className="text-orange-500">chowk</span>
           </h1>
           <p className="text-slate-600 text-sm">
             A curated community for Indian creatives who build, share, and grow together
