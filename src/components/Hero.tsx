@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Users, Sparkles, Heart } from 'lucide-react';
 import Aurora from './Aurora';
+import { Particles } from '@/components/ui/particles';
 
 interface HeroProps {
   onStartApplication: () => void;
@@ -18,6 +19,16 @@ export const Hero = ({ onStartApplication }: HeroProps) => {
           speed={0.3}
         />
       </div>
+      
+      {/* Particles Background */}
+      <Particles
+        className="absolute inset-0"
+        quantity={80}
+        ease={70}
+        color="#FF6B35"
+        staticity={30}
+        size={0.8}
+      />
       
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNGRjQ1MDAiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iNCIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
