@@ -38,7 +38,7 @@ export const Dashboard = ({ userData }: DashboardProps) => {
 
       <div className="max-w-6xl mx-auto px-6 pb-8">
         {activeTab === 'feed' && <CommunityFeed userData={userData} />}
-        {activeTab === 'events' && <EventsSection />}
+        {activeTab === 'events' && <EventsSection userData={userData} />}
         {activeTab === 'groups' && <CityGroups selectedCityGroups={selectedCityGroups} />}
         {activeTab === 'profile' && <ProfileSection userData={userData} />}
       </div>

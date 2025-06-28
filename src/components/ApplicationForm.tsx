@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -50,22 +50,41 @@ const cities = [
   'Pune', 'Ahmedabad', 'Jaipur', 'Lucknow', 'Kochi', 'Chandigarh', 'Other'
 ];
 
+const pastEvents = [
+  { id: 'creative-minds-mumbai', name: 'Creative Minds Meetup - Mumbai', image: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=300&object=cover' },
+  { id: 'design-thinking-delhi', name: 'Design Thinking Workshop - Delhi', image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&object=cover' },
+  { id: 'storytelling-bangalore', name: 'Visual Storytelling Summit - Bangalore', image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&object=cover' },
+  { id: 'brand-identity-mumbai', name: 'Brand Identity Bootcamp - Mumbai', image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&object=cover' },
+  { id: 'photography-chennai', name: 'Street Photography Walk - Chennai', image: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&h=300&object=cover' },
+  { id: 'ux-research-pune', name: 'UX Research Masterclass - Pune', image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=300&object=cover' }
+];
+
 export const ApplicationForm = ({ onResult }: ApplicationFormProps) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     city: '',
     profession: '',
-    portfolio: '',
+    pastEvents: [] as string[],
     answers: {} as Record<string, string>
   });
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showEventDropdown, setShowEventDropdown] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
+    }));
+  };
+
+  const handleEventToggle = (eventId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      pastEvents: prev.pastEvents.includes(eventId)
+        ? prev.pastEvents.filter(id => id !== eventId)
+        : [...prev.pastEvents, eventId]
     }));
   };
 
@@ -228,14 +247,50 @@ export const ApplicationForm = ({ onResult }: ApplicationFormProps) => {
             </div>
 
             <div>
-              <Label htmlFor="portfolio" className="text-slate-700 mb-2 block">Portfolio/Website (Optional)</Label>
-              <Input
-                id="portfolio"
-                value={formData.portfolio}
-                onChange={(e) => handleInputChange('portfolio', e.target.value)}
-                className="border-slate-300"
-                placeholder="https://your-portfolio.com"
-              />
+              <Label className="text-slate-700 mb-2 block">
+                Which Orange Chowk events have you attended in the past?
+              </Label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowEventDropdown(!showEventDropdown)}
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-left flex items-center justify-between bg-white hover:bg-slate-50"
+                >
+                  <span className="text-slate-700">
+                    {formData.pastEvents.length === 0 
+                      ? "Select events you've attended (optional)" 
+                      : `${formData.pastEvents.length} event(s) selected`
+                    }
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-slate-500" />
+                </button>
+                
+                {showEventDropdown && (
+                  <div className="absolute top-full left-0 right-0 z-50 bg-white border border-slate-300 rounded-md mt-1 shadow-lg max-h-60 overflow-y-auto">
+                    {pastEvents.map((event) => (
+                      <label
+                        key={event.id}
+                        className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={formData.pastEvents.includes(event.id)}
+                          onChange={() => handleEventToggle(event.id)}
+                          className="rounded border-slate-300 text-orange-500 focus:ring-orange-500"
+                        />
+                        <span className="text-slate-700 text-sm">{event.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {formData.pastEvents.length > 0 && (
+                <p className="text-sm text-orange-600 mt-2">
+                  Selected: {formData.pastEvents.map(id => 
+                    pastEvents.find(e => e.id === id)?.name
+                  ).join(', ')}
+                </p>
+              )}
             </div>
           </motion.div>
         )}
