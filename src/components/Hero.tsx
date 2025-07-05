@@ -25,8 +25,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.8,
-      ease: [0.25, 0.46, 0.45, 0.94]
+      duration: 0.8
     }
   }
 };
@@ -38,16 +37,14 @@ const cardVariants = {
     y: 0,
     scale: 1,
     transition: {
-      duration: 0.6,
-      ease: [0.25, 0.46, 0.45, 0.94]
+      duration: 0.6
     }
   },
   hover: {
     y: -8,
     scale: 1.02,
     transition: {
-      duration: 0.3,
-      ease: "easeOut"
+      duration: 0.3
     }
   }
 };
@@ -58,15 +55,13 @@ const buttonVariants = {
     opacity: 1,
     scale: 1,
     transition: {
-      duration: 0.5,
-      ease: "easeOut"
+      duration: 0.5
     }
   },
   hover: {
     scale: 1.05,
     transition: {
-      duration: 0.2,
-      ease: "easeInOut"
+      duration: 0.2
     }
   },
   tap: {
@@ -84,8 +79,7 @@ const badgeVariants = {
     scale: 1,
     y: 0,
     transition: {
-      duration: 0.6,
-      ease: "easeOut"
+      duration: 0.6
     }
   },
   hover: {
@@ -102,8 +96,7 @@ const titleVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 1,
-      ease: [0.25, 0.46, 0.45, 0.94]
+      duration: 1
     }
   }
 };
@@ -112,8 +105,7 @@ const floatingAnimation = {
   y: [-10, 10, -10],
   transition: {
     duration: 6,
-    repeat: Infinity,
-    ease: "easeInOut"
+    repeat: Infinity
   }
 };
 
@@ -274,7 +266,7 @@ export const Hero = ({ onStartApplication }: HeroProps) => {
             </motion.span>
             <motion.div
               animate={{ x: [0, 5, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 2, repeat: Infinity }}
             >
               <ArrowRight className="w-5 h-5" />
             </motion.div>

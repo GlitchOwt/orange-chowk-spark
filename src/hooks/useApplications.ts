@@ -8,7 +8,7 @@ export interface ApplicationResponse {
   email: string;
   city: string | null;
   profession: string | null;
-  past_events: string[] | null;
+  past_events: Json | null;
   motivation: string;
   community_meaning: string;
   collaboration_story: string;

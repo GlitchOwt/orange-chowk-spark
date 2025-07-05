@@ -16,7 +16,7 @@ export type Database = {
           collaboration_story: string
           community_meaning: string
           contribution_plans: string
-          created_at: string
+          created_at: string | null
           current_projects: string
           email: string
           evaluation_breakdown: Json | null
@@ -28,7 +28,7 @@ export type Database = {
           past_events: Json | null
           profession: string | null
           status: string | null
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
           ai_detected?: boolean | null
@@ -36,7 +36,7 @@ export type Database = {
           collaboration_story: string
           community_meaning: string
           contribution_plans: string
-          created_at?: string
+          created_at?: string | null
           current_projects: string
           email: string
           evaluation_breakdown?: Json | null
@@ -48,7 +48,7 @@ export type Database = {
           past_events?: Json | null
           profession?: string | null
           status?: string | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Update: {
           ai_detected?: boolean | null
@@ -56,7 +56,7 @@ export type Database = {
           collaboration_story?: string
           community_meaning?: string
           contribution_plans?: string
-          created_at?: string
+          created_at?: string | null
           current_projects?: string
           email?: string
           evaluation_breakdown?: Json | null
@@ -68,7 +68,7 @@ export type Database = {
           past_events?: Json | null
           profession?: string | null
           status?: string | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: []
       }

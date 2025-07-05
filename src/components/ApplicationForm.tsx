@@ -77,8 +77,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.5,
-      ease: "easeOut"
+      duration: 0.5
     }
   }
 };
@@ -105,8 +104,7 @@ const progressVariants = {
   visible: (progress: number) => ({
     width: `${progress}%`,
     transition: {
-      duration: 0.8,
-      ease: "easeOut"
+      duration: 0.8
     }
   })
 };
@@ -541,17 +539,20 @@ export const ApplicationForm = ({ onResult }: ApplicationFormProps) => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <Button
-                  onClick={prevStep}
-                  variant="outline"
-                  className="border-slate-300 text-slate-600 hover:bg-slate-50"
+                <motion.div
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back
-                </Button>
+                  <Button
+                    onClick={prevStep}
+                    variant="outline"
+                    className="border-slate-300 text-slate-600 hover:bg-slate-50"
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back
+                  </Button>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
